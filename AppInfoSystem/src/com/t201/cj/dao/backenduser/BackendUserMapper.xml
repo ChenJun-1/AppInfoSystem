@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.t201.cj.dao.backenduser.BackendUserMapper">
+	
+	<!-- 根据用户编码查询用户信息 -->
+	<select id="getLogin" resultType="BackendUser">
+		SELECT dd.valueName as userTypeName,bu.* 
+		FROM `backend_user` as bu , data_dictionary as dd
+		where bu.userCode = 'admin' and bu.userType = dd.id;
+	</select>
+</mapper>
