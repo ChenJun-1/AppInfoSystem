@@ -9,13 +9,17 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.t201.cj.pojo.AppCategory;
 import com.t201.cj.pojo.AppInfo;
 import com.t201.cj.pojo.DataDictionary;
 import com.t201.cj.pojo.DevUser;
+import com.t201.cj.service.appcategory.AppCategoryService;
 import com.t201.cj.service.appinfo.AppInfoService;
+import com.t201.cj.service.datadictionary.DataDictionaryService;
 import com.t201.cj.tools.Constants;
 import com.t201.cj.tools.PageSupport;
 
@@ -26,6 +30,22 @@ public class AppInfoController {
 	
 	@Resource
 	private AppInfoService appInfoService;
+	@Resource
+	private AppCategoryService appCategoryService;
+	@Resource
+	private DataDictionaryService dataDictionaryService;
+	
+	@RequestMapping(value="/appinfoadd.html")
+	public String appInfoAdd(){
+		return "developer/appinfoadd";
+	}
+	
+	@RequestMapping(value="/categorylevellist.json",method=RequestMethod.GET)
+	@ResponseBody
+	public Object categoryLevelList(@RequestParam("pid")String pid){
+		logger.debug("categoryLevelList============>pid:" + Integer.valueOf(pid));
+		return appCategoryService.getAppCategories(Integer.valueOf(pid));
+	}
 	
 	@RequestMapping(value="/list.html")
 	public String getAppInfoList(
@@ -51,8 +71,8 @@ public class AppInfoController {
 		List<DataDictionary> statusList = null;
 		List<DataDictionary> flatFormList = null;
 		List<AppCategory> categoryLevel1List = null;//列出一级分类列表，注：二级和三级分类列表通过异步ajax获取
-		/*List<AppCategory> categoryLevel2List = null;
-		List<AppCategory> categoryLevel3List = null;*/
+		List<AppCategory> categoryLevel2List = null;
+		List<AppCategory> categoryLevel3List = null;
 		//页面容量
 		int pageSize = Constants.pageSize;
 		//当前页码
@@ -86,10 +106,10 @@ public class AppInfoController {
 			queryFlatformId = Integer.parseInt(_queryFlatformId);
 		}
 		
-		//总数量（表）
+		//总数量
 		int totalCount = 0;
 		try {
-			totalCount = appInfoService.getAppInfoCount(querySoftwareName, queryStatus, queryCategoryLevel1,  queryFlatformId,queryCategoryLevel2, queryCategoryLevel3);
+			totalCount = appInfoService.getAppInfoCount(querySoftwareName, queryStatus, queryFlatformId, queryCategoryLevel1,  queryCategoryLevel2, queryCategoryLevel3);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -106,14 +126,12 @@ public class AppInfoController {
 		}else if(currentPageNo > totalPageCount){
 			currentPageNo = totalPageCount;
 		}
-		try {
-			appInfoList = appInfoService.getAppInfoList(querySoftwareName, queryStatus, queryCategoryLevel1, queryCategoryLevel2, queryCategoryLevel3, queryFlatformId, devId, currentPageNo, pageSize);
-			/*statusList = this.getDataDictionaryList("APP_STATUS");
-			flatFormList = this.getDataDictionaryList("APP_FLATFORM");
-			categoryLevel1List = appCategoryService.getAppCategoryListByParentId(null);*/
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
+		appInfoList = appInfoService.getAppInfoList(querySoftwareName, queryStatus, queryFlatformId, queryCategoryLevel1, queryCategoryLevel2, queryCategoryLevel3, devId, currentPageNo, pageSize);
+		statusList = dataDictionaryService.getDataDictionaries("APP_STATUS");
+		flatFormList = dataDictionaryService.getDataDictionaries("APP_FLATFORM");
+		categoryLevel1List = appCategoryService.getAppCategories(null);
+		
 		model.addAttribute("appInfoList", appInfoList);
 		model.addAttribute("statusList", statusList);
 		model.addAttribute("flatFormList", flatFormList);
@@ -126,15 +144,17 @@ public class AppInfoController {
 		model.addAttribute("queryCategoryLevel3", queryCategoryLevel3);
 		model.addAttribute("queryFlatformId", queryFlatformId);
 		
-		/*//二级分类列表和三级分类列表---回显
+		//二级分类列表和三级分类列表
 		if(queryCategoryLevel2 != null && !queryCategoryLevel2.equals("")){
-			categoryLevel2List = getCategoryList(queryCategoryLevel1.toString());
+			logger.debug("=====================>queryCategoryLevel1:" + queryCategoryLevel1);
+			categoryLevel2List = appCategoryService.getAppCategories(queryCategoryLevel1);
 			model.addAttribute("categoryLevel2List", categoryLevel2List);
 		}
 		if(queryCategoryLevel3 != null && !queryCategoryLevel3.equals("")){
-			categoryLevel3List = getCategoryList(queryCategoryLevel2.toString());
+			logger.debug("=====================>queryCategoryLevel2:" + queryCategoryLevel2);
+			categoryLevel3List = appCategoryService.getAppCategories(queryCategoryLevel2);
 			model.addAttribute("categoryLevel3List", categoryLevel3List);
-		}*/
+		}
 		return "developer/appinfolist";
 	}
 	
