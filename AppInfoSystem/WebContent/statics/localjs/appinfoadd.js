@@ -94,7 +94,7 @@ $(function(){
 	});
 	
 	$("#back").on("click",function(){
-		window.location.href = "list";
+		window.location.href = "list.html";
 	});
 	
 	$("#APKName").bind("blur",function(){
@@ -114,7 +114,7 @@ $(function(){
 				}
 			},
 			error:function(data){//当访问时候，404，500 等非200的错误状态码
-				alert("请求错误！");
+				alert("请求错误123！");
 			}
 		});
 	});

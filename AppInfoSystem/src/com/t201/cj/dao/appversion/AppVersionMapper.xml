@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.t201.cj.dao.appversion.AppVersionMapper">
+	
+	<!--  根据AppId 删除版本信息 -->
+	<delete id="delAppVersion" >
+		DELETE FROM `app_version` 
+		WHERE appId = #{aid}
+	</delete>
+	
+	<!-- 修改版本信息 -->
+	<update id="modify" parameterType="AppVersion">
+		update app_version
+		<trim prefix="set" suffixOverrides="," suffix="where id=#{id}">
+			<if test="versionNo != null">
+				versionNo=#{versionNo},
+			</if>
+			<if test="versionInfo != null">
+				versionInfo=#{versionInfo},
+			</if>
+			<if test="publishStatus != null">
+				publishStatus=#{publishStatus},
+			</if>
+			<if test="downloadLink != null">
+				downloadLink=#{downloadLink},
+			</if>
+			<if test="apkLocPath != null">
+				apkLocPath=#{apkLocPath},
+			</if>
+			<if test="versionSize != null">
+				versionSize=#{versionSize},
+			</if>
+			<if test="apkFileName != null">
+				apkFileName=#{apkFileName},
+			</if>
+			<if test="modifyBy != null">
+				modifyBy=#{modifyBy},
+			</if>
+			<if test="modifyDate != null">
+				modifyDate=#{modifyDate},
+			</if>
+		</trim>
+	</update>
+	
+	<!-- 根据版本id删除 apk文件 -->
+	<update id="deleteApkFile" >
+		update `app_version` 
+		set apkLocPath=null,apkFileName = null,downloadLink = null 
+		where id = #{vid}
+	</update>
+	
+	<!-- 根据APP版本id，信息查询APP版本信息 -->
+	<select id="getAppVersionById" resultType="AppVersion" >
+		SELECT * FROM `app_version` 
+		where id = #{vid};
+	</select>
+	
+	<!-- 查询最新版本的自增ID,用于更新APP基础信息 -->
+	<select id="getNewId" resultType="int">
+		select id from app_version order by creationDate desc LIMIT 1
+	</select>
+	
+	<!-- 新增APP版本信息 -->
+	<insert id="addAppVersion" parameterType="AppVersion">
+		INSERT INTO app_version (appId, versionNo, versionInfo, publishStatus, 
+			downloadLink, versionSize, createdBy, creationDate, apkLocPath, 
+			apkFileName)
+		VALUES (#{appId}, #{versionNo}, #{versionInfo}, #{publishStatus}, 
+			#{downloadLink}, #{versionSize}, #{createdBy}, #{creationDate}, 
+			#{apkLocPath}, #{apkFileName})
+	</insert>
+	
+	<!-- 根据APPid查询-APP版本信息 -->
+	<select id="getAppVersionList" resultType="AppVersion" >
+		SELECT (select ai.softwareName from app_info ai where ai.id = av.appId) as appName ,
+			   (select dd.valueName from data_dictionary dd where dd.valueId = av.publishStatus and dd.typeCode = 'PUBLISH_STATUS') as publishStatusName ,
+				av.*
+		FROM `app_version` as av
+		where 1 = 1 
+		<if test="aid != null">
+			 and av.appId = #{aid}
+		</if>
+		order by av.creationDate DESC
+	</select>
+	
+</mapper>

@@ -3,7 +3,118 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.t201.cj.dao.appinfo.AppInfoMapper">
-
+	
+	<!-- 根据id 修改APP的状态 -->
+	<update id="updStatus" >
+		update app_info 
+		set status=#{sta}
+		where id = #{id}
+	</update>
+	
+	<!-- 根据id 删除APP信息 -->
+	<delete id="delAppInfo" >
+		DELETE FROM `app_info` 
+		WHERE `id`=#{id}
+	</delete>
+	
+	<!-- 修改APP基本信息的最新版本信息 -->
+	<update id="updVersionIdById" >
+		UPDATE app_info set versionId=#{vid} WHERE id=#{aid}
+	</update>
+	
+	<!-- 修该APP基础信息 -->
+	<update id="modify" parameterType="AppInfo">
+		UPDATE app_info 
+		<set>
+			<if test="softwareName != null and softwareName != ''">
+				softwareName=#{softwareName},
+			</if>
+			<if test="supportROM != null and supportROM != ''">
+				supportROM=#{supportROM},
+			</if>
+			<if test="interfaceLanguage != null and interfaceLanguage != ''">
+				interfaceLanguage=#{interfaceLanguage},
+			</if>
+			<if test="softwareSize != null">
+				softwareSize=#{softwareSize},
+			</if>
+			<if test="appInfo != null and appInfo != ''">
+				appInfo=#{appInfo},
+			</if>
+			<if test="status != null">
+				status=#{status},
+			</if>
+			<if test="flatformId != null">
+				flatformId=#{flatformId},
+			</if>
+			<if test="categoryLevel3 != null">
+				categoryLevel3=#{categoryLevel3},
+			</if>
+			<if test="downloads != null">
+				downloads=#{downloads},
+			</if>
+			<if test="modifyBy != null">
+				modifyBy=#{modifyBy},
+			</if>
+			<if test="modifyDate != null and modifyDate != ''">
+				modifyDate=#{modifyDate},
+			</if>
+			<if test="categoryLevel1 != null">
+				categoryLevel1=#{categoryLevel1},
+			</if>
+			<if test="categoryLevel2 != null">
+				categoryLevel2=#{categoryLevel2},
+			</if>
+			<if test="logoPicPath != null and logoPicPath != ''">
+				logoPicPath=#{logoPicPath},
+			</if>
+			<if test="logoLocPath != null and logoLocPath != ''">
+				logoLocPath=#{logoLocPath},
+			</if>
+		</set>
+		 WHERE id=#{id}
+	</update>
+	
+	<!-- 根据id删除APPLOGO -->
+	<update id="delAppLOGO" >
+		update app_info 
+		set logoPicPath=null,logoLocPath = null 
+		where id = #{id}
+	</update>
+	
+	<!-- 根据条件查询APP信息 -->
+	<select id="getAppInfo" resultType="AppInfo">
+	 	SELECT a.*,
+			(select devName from dev_user where id = a.devId) as devName,
+			(select valueName from data_dictionary d where  a.status=d.valueId and d.typeCode='APP_STATUS') as statusName,
+			(select valueName from data_dictionary d where  a.status=d.valueId AND d.typeCode='APP_FLATFORM') as flatformName,
+			(select categoryName from app_category c where  c.id=a.categoryLevel1) as categoryLevel1Name,
+			(select categoryName from app_category c where  c.id=a.categoryLevel2) as categoryLevel2Name,
+			(select categoryName from app_category c where  c.id=a.categoryLevel3) as categoryLevel3Name,
+			(select v.versionNo from app_version v where v.id=a.versionId ) as versionNo
+	 	FROM `app_info` a
+		WHERE 1=1 
+		<if test="APKName != null and APKName != '' ">
+			and APKName = #{APKName} 
+		</if>
+		<if test="id != null">
+			and id = #{id} 
+		</if>
+	</select>
+	
+	<!-- 添加APP信息 -->
+	<insert id="addAppInfo" parameterType="AppInfo">
+		insert into app_info (softwareName,APKName,supportROM,interfaceLanguage,
+			updateDate,softwareSize,devId,appInfo,status,onSaleDate,offSaleDate,
+			categoryLevel1,categoryLevel2,categoryLevel3,downloads,flatformId,
+			logoPicPath,logoLocPath,createdBy,creationDate)
+		values(#{softwareName},#{APKName},#{supportROM},#{interfaceLanguage},
+			#{updateDate},#{softwareSize},#{devId},#{appInfo},#{status},
+			#{onSaleDate},#{offSaleDate},#{categoryLevel1},#{categoryLevel2},
+			#{categoryLevel3},#{downloads},#{flatformId},#{logoPicPath},
+			#{logoLocPath},#{createdBy},#{creationDate})
+	</insert>
+	
 	<!-- 根据条件查询APP信息列表 -->
 	<select id="getAppInfoList" resultType="AppInfo">
 		select a.id, a.softwareName,a.APKName,a.supportROM,a.softwareSize,a.devId,
@@ -46,7 +157,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				and a.devId = #{devId}
 			</if>
 		</trim>
-		limit #{currentPageNo},#{pageSize}
+		order by creationDate DESC  limit #{currentPageNo},#{pageSize}
 	</select>
 	
 	<!-- 根据条件查询APP信息列表数量 -->

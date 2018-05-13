@@ -36,6 +36,40 @@ public class AppInfoServiceImpl implements AppInfoService {
 				queryFlatformId, queryCategoryLevel1, queryCategoryLevel2, 
 				queryCategoryLevel3, devId, currentPageNo, pageSize);
 	}
-	
+
+	@Override
+	public boolean addAppInfo(AppInfo appInfo) {
+		return appInfoMapper.addAppInfo(appInfo) == 1 ? true : false;
+	}
+
+	@Override
+	public AppInfo getAppInfo(Integer id, String APKName) {
+		return appInfoMapper.getAppInfo(id, APKName);
+	}
+
+	@Override
+	public boolean delAppLOGO(Integer id) {
+		return appInfoMapper.delAppLOGO(id) == 1 ? true : false;
+	}
+
+	@Override
+	public boolean modify(AppInfo appInfo) {
+		return appInfoMapper.modify(appInfo) == 1 ? true : false;
+	}
+
+	@Override
+	public boolean updVersionIdById(Integer vid, Integer aid) {
+		return appInfoMapper.updVersionIdById(vid, aid) == 1 ? true : false;
+	}
+
+	@Override
+	public boolean delAppInfo(Integer id) {
+		return appInfoMapper.delAppInfo(id) == 1 ? true : false;
+	}
+
+	@Override
+	public boolean updStatus(Integer id, Integer sta) {
+		return appInfoMapper.updStatus(id, sta) == 1 ? true : false;
+	}
 	
 }

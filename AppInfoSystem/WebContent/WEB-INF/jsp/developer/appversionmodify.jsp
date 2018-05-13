@@ -84,7 +84,7 @@
         </div>
         <div class="x_content" style="display: block;">
          <br>
-        <form class="form-horizontal form-label-left" action="appversionmodifysave" method="post" enctype="multipart/form-data">
+        <form class="form-horizontal form-label-left" action="${pageContext.request.contextPath }/pre/appinfo/appversionmodifysave.html" method="post" enctype="multipart/form-data">
            <input type="hidden" name="id" id="id" value="${appVersion.id}">
            <input type="hidden" name="appId" id="appId" value="${appVersion.appId}">
           <div class="item form-group">
@@ -116,8 +116,7 @@
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
               <textarea id="versionInfo" name="versionInfo" required="required"  
-              placeholder="请输入本版本的相关信息，本信息作为该版本的详细信息进行版本介绍。" class="form-control col-md-7 col-xs-12">
-              ${appVersion.versionInfo }</textarea>
+              placeholder="请输入本版本的相关信息，本信息作为该版本的详细信息进行版本介绍。" class="form-control col-md-7 col-xs-12">${appVersion.versionInfo }</textarea>
             </div>
           </div>
            <div class="item form-group">

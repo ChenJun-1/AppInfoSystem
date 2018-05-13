@@ -10,7 +10,7 @@
              <div class="clearfix"></div>
       </div>
       <div class="x_content">
-        <form class="form-horizontal form-label-left" action="appinfomodifysave" method="post" enctype="multipart/form-data">
+        <form class="form-horizontal form-label-left" action="${pageContext.request.contextPath }/pre/appinfo/appinfomodifysave.html" method="post" enctype="multipart/form-data">
           <input type="hidden" name="id" id="id" value="${appInfo.id}">
           <div class="item form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">软件名称 <span class="required">*</span>
@@ -112,8 +112,7 @@
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
               <textarea id="appInfo" name="appInfo" required="required"
-              placeholder="请输入本软件的相关信息，本信息作为软件的详细信息进行软件的介绍。" class="form-control col-md-7 col-xs-12">
-              ${appInfo.appInfo}</textarea>
+              placeholder="请输入本软件的相关信息，本信息作为软件的详细信息进行软件的介绍。" class="form-control col-md-7 col-xs-12">${appInfo.appInfo}</textarea>
             </div>
           </div>
            <div class="item form-group">
